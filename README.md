@@ -1,2 +1,4 @@
-# xmc4500_I2C_temperature
- infineon xmc4500 i2c temperature
+# XMC4500 I2C temperature
+ Infineon XMC4500 and MPC9808 i2c temperature sensor.
+ 
+ I use Infineon DAVE4 and the XMC4500 Relax Kit V1 for this project. 
