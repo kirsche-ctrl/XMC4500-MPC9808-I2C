@@ -1,0 +1,635 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "main.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .comm mb,200,4
+  20              	 .global tx_completion_0
+  21              	 .section .bss.tx_completion_0,"aw",%nobits
+  24              	tx_completion_0:
+  25 0000 00       	 .space 1
+  26              	 .global rx_completion_0
+  27              	 .section .bss.rx_completion_0,"aw",%nobits
+  30              	rx_completion_0:
+  31 0000 00       	 .space 1
+  32              	 .global __aeabi_i2d
+  33              	 .global __aeabi_dmul
+  34              	 .global __aeabi_ddiv
+  35              	 .global __aeabi_dadd
+  36              	 .global __aeabi_d2f
+  37              	 .section .rodata
+  38              	 .align 2
+  39              	.LC0:
+  40 0000 5431203D 	 .ascii "T1 = %d || T2 = %d\012\000"
+  40      20256420 
+  40      7C7C2054 
+  40      32203D20 
+  40      25640A00 
+  41              	 .global __aeabi_f2d
+  42              	 .align 2
+  43              	.LC1:
+  44 0014 2566200A 	 .ascii "%f \012\000"
+  44      00
+  45 0019 000000   	 .section .text.main,"ax",%progbits
+  46              	 .align 2
+  47              	 .global main
+  48              	 .thumb
+  49              	 .thumb_func
+  51              	main:
+  52              	.LFB306:
+  53              	 .file 1 "../main.c"
+   1:../main.c     **** #include <DAVE.h>
+   2:../main.c     **** #include <stdio.h>
+   3:../main.c     **** #include <ctype.h>
+   4:../main.c     **** #include <string.h>
+   5:../main.c     **** #include <stdbool.h>
+   6:../main.c     **** 
+   7:../main.c     **** #define TEST_SUCCESS 1
+   8:../main.c     **** #define TEST_FAILED 0
+   9:../main.c     **** 
+  10:../main.c     **** typedef enum MPC9809
+  11:../main.c     **** {
+  12:../main.c     **** 	ADR = 0x18 << 1, 			//MPC9809 address
+  13:../main.c     **** 	INT_REG = 0x00,
+  14:../main.c     **** 	REG_CONF = 0x01 << 1, 		// config. register
+  15:../main.c     **** 	TEMP_REG = 0x05,		//temp reg
+  16:../main.c     **** 	SHUT_UP_DOWN = 0x0100 << 1 	//sensor shut up and down
+  17:../main.c     **** } TEMP_SENS;
+  18:../main.c     **** 
+  19:../main.c     **** char mb[200]; // MessageBuffer for sprintf()
+  20:../main.c     **** 
+  21:../main.c     **** void delay(uint32_t);
+  22:../main.c     **** 
+  23:../main.c     **** volatile uint8_t tx_completion_0 = 0, rx_completion_0 = 0;
+  24:../main.c     **** 
+  25:../main.c     **** int main(void)
+  26:../main.c     **** {
+  54              	 .loc 1 26 0
+  55              	 .cfi_startproc
+  56              	 
+  57              	 
+  58 0000 B0B5     	 push {r4,r5,r7,lr}
+  59              	.LCFI0:
+  60              	 .cfi_def_cfa_offset 16
+  61              	 .cfi_offset 4,-16
+  62              	 .cfi_offset 5,-12
+  63              	 .cfi_offset 7,-8
+  64              	 .cfi_offset 14,-4
+  65 0002 88B0     	 sub sp,sp,#32
+  66              	.LCFI1:
+  67              	 .cfi_def_cfa_offset 48
+  68 0004 04AF     	 add r7,sp,#16
+  69              	.LCFI2:
+  70              	 .cfi_def_cfa 7,32
+  27:../main.c     **** 	uint32_t i2c_master_fifo_xfer_status = 0;
+  71              	 .loc 1 27 0
+  72 0006 0023     	 movs r3,#0
+  73 0008 FB60     	 str r3,[r7,#12]
+  28:../main.c     **** 
+  29:../main.c     **** 	DAVE_STATUS_t status;
+  30:../main.c     **** 
+  31:../main.c     **** 	status = DAVE_Init();
+  74              	 .loc 1 31 0
+  75 000a FFF7FEFF 	 bl DAVE_Init
+  76 000e 0346     	 mov r3,r0
+  77 0010 FB71     	 strb r3,[r7,#7]
+  32:../main.c     **** 
+  33:../main.c     **** 	if(status != DAVE_STATUS_SUCCESS)
+  78              	 .loc 1 33 0
+  79 0012 FB79     	 ldrb r3,[r7,#7]
+  80 0014 002B     	 cmp r3,#0
+  81 0016 00D0     	 beq .L2
+  82              	.L3:
+  34:../main.c     **** 	{
+  35:../main.c     **** 		while(true){}
+  83              	 .loc 1 35 0 discriminator 1
+  84 0018 FEE7     	 b .L3
+  85              	.L2:
+  36:../main.c     **** 	}
+  37:../main.c     **** 
+  38:../main.c     **** 	USBD_VCOM_Connect();
+  86              	 .loc 1 38 0
+  87 001a FFF7FEFF 	 bl USBD_VCOM_Connect
+  39:../main.c     **** 
+  40:../main.c     **** 	while(!USBD_VCOM_IsEnumDone());
+  88              	 .loc 1 40 0
+  89 001e 00BF     	 nop
+  90              	.L4:
+  91              	 .loc 1 40 0 is_stmt 0 discriminator 1
+  92 0020 FFF7FEFF 	 bl USBD_VCOM_IsEnumDone
+  93 0024 0346     	 mov r3,r0
+  94 0026 002B     	 cmp r3,#0
+  95 0028 FAD0     	 beq .L4
+  41:../main.c     **** 	while(!cdc_event_flags.line_encoding_event_flag);
+  96              	 .loc 1 41 0 is_stmt 1
+  97 002a 00BF     	 nop
+  98              	.L5:
+  99              	 .loc 1 41 0 is_stmt 0 discriminator 1
+ 100 002c 644B     	 ldr r3,.L14
+ 101 002e 1B78     	 ldrb r3,[r3]
+ 102 0030 DBB2     	 uxtb r3,r3
+ 103 0032 002B     	 cmp r3,#0
+ 104 0034 FAD0     	 beq .L5
+  42:../main.c     **** 
+  43:../main.c     **** 	delay(0xffff);
+ 105              	 .loc 1 43 0 is_stmt 1
+ 106 0036 4FF6FF70 	 movw r0,#65535
+ 107 003a FFF7FEFF 	 bl delay
+ 108              	.L13:
+ 109              	.LBB2:
+  44:../main.c     **** 
+  45:../main.c     **** 	while (true)
+  46:../main.c     **** 	{
+  47:../main.c     **** 		uint8_t i2c_data_x[1];
+  48:../main.c     **** 		uint8_t i2c_temp = INT_REG;
+ 110              	 .loc 1 48 0
+ 111 003e 0023     	 movs r3,#0
+ 112 0040 FB70     	 strb r3,[r7,#3]
+  49:../main.c     **** 
+  50:../main.c     **** 		I2C_MASTER_Init(&I2C_MASTER_0);
+ 113              	 .loc 1 50 0
+ 114 0042 6048     	 ldr r0,.L14+4
+ 115 0044 FFF7FEFF 	 bl I2C_MASTER_Init
+  51:../main.c     **** 
+  52:../main.c     **** 		I2C_MASTER_Transmit(&I2C_MASTER_0, true, ADR, &i2c_temp, 1, true);
+ 116              	 .loc 1 52 0
+ 117 0048 FC1C     	 adds r4,r7,#3
+ 118 004a 0123     	 movs r3,#1
+ 119 004c 0093     	 str r3,[sp]
+ 120 004e 0123     	 movs r3,#1
+ 121 0050 0193     	 str r3,[sp,#4]
+ 122 0052 5C48     	 ldr r0,.L14+4
+ 123 0054 0121     	 movs r1,#1
+ 124 0056 3022     	 movs r2,#48
+ 125 0058 2346     	 mov r3,r4
+ 126 005a FFF7FEFF 	 bl I2C_MASTER_Transmit
+  53:../main.c     **** 		while (tx_completion_0 == 0);
+ 127              	 .loc 1 53 0
+ 128 005e 00BF     	 nop
+ 129              	.L6:
+ 130              	 .loc 1 53 0 is_stmt 0 discriminator 1
+ 131 0060 594B     	 ldr r3,.L14+8
+ 132 0062 1B78     	 ldrb r3,[r3]
+ 133 0064 DBB2     	 uxtb r3,r3
+ 134 0066 002B     	 cmp r3,#0
+ 135 0068 FAD0     	 beq .L6
+  54:../main.c     **** 		tx_completion_0 = 0;
+ 136              	 .loc 1 54 0 is_stmt 1
+ 137 006a 574B     	 ldr r3,.L14+8
+ 138 006c 0022     	 movs r2,#0
+ 139 006e 1A70     	 strb r2,[r3]
+  55:../main.c     **** 
+  56:../main.c     **** 		i2c_temp = TEMP_REG;
+ 140              	 .loc 1 56 0
+ 141 0070 0523     	 movs r3,#5
+ 142 0072 FB70     	 strb r3,[r7,#3]
+  57:../main.c     **** 
+  58:../main.c     **** 		I2C_MASTER_Transmit(&I2C_MASTER_0, true, ADR, &i2c_temp, 1, false);
+ 143              	 .loc 1 58 0
+ 144 0074 FC1C     	 adds r4,r7,#3
+ 145 0076 0123     	 movs r3,#1
+ 146 0078 0093     	 str r3,[sp]
+ 147 007a 0023     	 movs r3,#0
+ 148 007c 0193     	 str r3,[sp,#4]
+ 149 007e 5148     	 ldr r0,.L14+4
+ 150 0080 0121     	 movs r1,#1
+ 151 0082 3022     	 movs r2,#48
+ 152 0084 2346     	 mov r3,r4
+ 153 0086 FFF7FEFF 	 bl I2C_MASTER_Transmit
+  59:../main.c     **** 		while (tx_completion_0 == 0);
+ 154              	 .loc 1 59 0
+ 155 008a 00BF     	 nop
+ 156              	.L7:
+ 157              	 .loc 1 59 0 is_stmt 0 discriminator 1
+ 158 008c 4E4B     	 ldr r3,.L14+8
+ 159 008e 1B78     	 ldrb r3,[r3]
+ 160 0090 DBB2     	 uxtb r3,r3
+ 161 0092 002B     	 cmp r3,#0
+ 162 0094 FAD0     	 beq .L7
+  60:../main.c     **** 		tx_completion_0 = 0;
+ 163              	 .loc 1 60 0 is_stmt 1
+ 164 0096 4C4B     	 ldr r3,.L14+8
+ 165 0098 0022     	 movs r2,#0
+ 166 009a 1A70     	 strb r2,[r3]
+  61:../main.c     **** 
+  62:../main.c     **** 		I2C_MASTER_Receive(&I2C_MASTER_0,true, ADR, i2c_data_x, 2, true, true);
+ 167              	 .loc 1 62 0
+ 168 009c 3C1D     	 adds r4,r7,#4
+ 169 009e 0223     	 movs r3,#2
+ 170 00a0 0093     	 str r3,[sp]
+ 171 00a2 0123     	 movs r3,#1
+ 172 00a4 0193     	 str r3,[sp,#4]
+ 173 00a6 0123     	 movs r3,#1
+ 174 00a8 0293     	 str r3,[sp,#8]
+ 175 00aa 4648     	 ldr r0,.L14+4
+ 176 00ac 0121     	 movs r1,#1
+ 177 00ae 3022     	 movs r2,#48
+ 178 00b0 2346     	 mov r3,r4
+ 179 00b2 FFF7FEFF 	 bl I2C_MASTER_Receive
+  63:../main.c     **** 		while(rx_completion_0 == 0);
+ 180              	 .loc 1 63 0
+ 181 00b6 00BF     	 nop
+ 182              	.L8:
+ 183              	 .loc 1 63 0 is_stmt 0 discriminator 1
+ 184 00b8 444B     	 ldr r3,.L14+12
+ 185 00ba 1B78     	 ldrb r3,[r3]
+ 186 00bc DBB2     	 uxtb r3,r3
+ 187 00be 002B     	 cmp r3,#0
+ 188 00c0 FAD0     	 beq .L8
+  64:../main.c     **** 		rx_completion_0 = 0;
+ 189              	 .loc 1 64 0 is_stmt 1
+ 190 00c2 424B     	 ldr r3,.L14+12
+ 191 00c4 0022     	 movs r2,#0
+ 192 00c6 1A70     	 strb r2,[r3]
+  65:../main.c     **** 
+  66:../main.c     **** 		if (!i2c_master_fifo_xfer_status)
+ 193              	 .loc 1 66 0
+ 194 00c8 FB68     	 ldr r3,[r7,#12]
+ 195 00ca 002B     	 cmp r3,#0
+ 196 00cc 02D1     	 bne .L9
+  67:../main.c     **** 		{
+  68:../main.c     **** 			i2c_master_fifo_xfer_status = TEST_SUCCESS;
+ 197              	 .loc 1 68 0
+ 198 00ce 0123     	 movs r3,#1
+ 199 00d0 FB60     	 str r3,[r7,#12]
+ 200 00d2 01E0     	 b .L10
+ 201              	.L9:
+  69:../main.c     **** 		}
+  70:../main.c     **** 		else
+  71:../main.c     **** 		{
+  72:../main.c     **** 			i2c_master_fifo_xfer_status = TEST_FAILED;
+ 202              	 .loc 1 72 0
+ 203 00d4 0023     	 movs r3,#0
+ 204 00d6 FB60     	 str r3,[r7,#12]
+ 205              	.L10:
+  73:../main.c     **** 		}
+  74:../main.c     **** 
+  75:../main.c     **** 		float temp = 0;
+ 206              	 .loc 1 75 0
+ 207 00d8 4FF00003 	 mov r3,#0
+ 208 00dc BB60     	 str r3,[r7,#8]
+  76:../main.c     **** 
+  77:../main.c     **** 		i2c_data_x[0] = i2c_data_x[0] & 0x1f;
+ 209              	 .loc 1 77 0
+ 210 00de 3B79     	 ldrb r3,[r7,#4]
+ 211 00e0 03F01F03 	 and r3,r3,#31
+ 212 00e4 DBB2     	 uxtb r3,r3
+ 213 00e6 3B71     	 strb r3,[r7,#4]
+  78:../main.c     **** 
+  79:../main.c     **** 		if ((i2c_data_x[0] & 0x10) == 0x10)
+ 214              	 .loc 1 79 0
+ 215 00e8 3B79     	 ldrb r3,[r7,#4]
+ 216 00ea 03F01003 	 and r3,r3,#16
+ 217 00ee 002B     	 cmp r3,#0
+ 218 00f0 18D0     	 beq .L11
+  80:../main.c     **** 		{
+  81:../main.c     **** 			i2c_data_x[0] = i2c_data_x[1] & 0x0f;
+ 219              	 .loc 1 81 0
+ 220 00f2 7B79     	 ldrb r3,[r7,#5]
+ 221 00f4 03F00F03 	 and r3,r3,#15
+ 222 00f8 DBB2     	 uxtb r3,r3
+ 223 00fa 3B71     	 strb r3,[r7,#4]
+  82:../main.c     **** 			temp = 256 - ((i2c_data_x[0]*16) + (i2c_data_x[1]/16));
+ 224              	 .loc 1 82 0
+ 225 00fc 3B79     	 ldrb r3,[r7,#4]
+ 226 00fe 1A46     	 mov r2,r3
+ 227 0100 1346     	 mov r3,r2
+ 228 0102 1B07     	 lsls r3,r3,#28
+ 229 0104 9B1A     	 subs r3,r3,r2
+ 230 0106 1B01     	 lsls r3,r3,#4
+ 231 0108 1A46     	 mov r2,r3
+ 232 010a 7B79     	 ldrb r3,[r7,#5]
+ 233 010c 1B09     	 lsrs r3,r3,#4
+ 234 010e DBB2     	 uxtb r3,r3
+ 235 0110 D31A     	 subs r3,r2,r3
+ 236 0112 03F58073 	 add r3,r3,#256
+ 237 0116 07EE903A 	 fmsr s15,r3
+ 238 011a F8EEE77A 	 fsitos s15,s15
+ 239 011e C7ED027A 	 fsts s15,[r7,#8]
+ 240 0122 2BE0     	 b .L12
+ 241              	.L11:
+  83:../main.c     **** 		}
+  84:../main.c     **** 		else
+  85:../main.c     **** 		{
+  86:../main.c     **** 			temp = (i2c_data_x[0]*16.0) + (i2c_data_x[1]/16.0);
+ 242              	 .loc 1 86 0
+ 243 0124 3B79     	 ldrb r3,[r7,#4]
+ 244 0126 1846     	 mov r0,r3
+ 245 0128 FFF7FEFF 	 bl __aeabi_i2d
+ 246 012c 0246     	 mov r2,r0
+ 247 012e 0B46     	 mov r3,r1
+ 248 0130 1046     	 mov r0,r2
+ 249 0132 1946     	 mov r1,r3
+ 250 0134 4FF00002 	 mov r2,#0
+ 251 0138 254B     	 ldr r3,.L14+16
+ 252 013a FFF7FEFF 	 bl __aeabi_dmul
+ 253 013e 0246     	 mov r2,r0
+ 254 0140 0B46     	 mov r3,r1
+ 255 0142 1446     	 mov r4,r2
+ 256 0144 1D46     	 mov r5,r3
+ 257 0146 7B79     	 ldrb r3,[r7,#5]
+ 258 0148 1846     	 mov r0,r3
+ 259 014a FFF7FEFF 	 bl __aeabi_i2d
+ 260 014e 0246     	 mov r2,r0
+ 261 0150 0B46     	 mov r3,r1
+ 262 0152 1046     	 mov r0,r2
+ 263 0154 1946     	 mov r1,r3
+ 264 0156 4FF00002 	 mov r2,#0
+ 265 015a 1D4B     	 ldr r3,.L14+16
+ 266 015c FFF7FEFF 	 bl __aeabi_ddiv
+ 267 0160 0246     	 mov r2,r0
+ 268 0162 0B46     	 mov r3,r1
+ 269 0164 2046     	 mov r0,r4
+ 270 0166 2946     	 mov r1,r5
+ 271 0168 FFF7FEFF 	 bl __aeabi_dadd
+ 272 016c 0246     	 mov r2,r0
+ 273 016e 0B46     	 mov r3,r1
+ 274 0170 1046     	 mov r0,r2
+ 275 0172 1946     	 mov r1,r3
+ 276 0174 FFF7FEFF 	 bl __aeabi_d2f
+ 277 0178 0346     	 mov r3,r0
+ 278 017a BB60     	 str r3,[r7,#8]
+ 279              	.L12:
+  87:../main.c     **** 		}
+  88:../main.c     **** 
+  89:../main.c     **** 		sprintf(mb, "T1 = %d || T2 = %d\n", i2c_data_x[0], i2c_data_x[1]);
+ 280              	 .loc 1 89 0
+ 281 017c 3B79     	 ldrb r3,[r7,#4]
+ 282 017e 1A46     	 mov r2,r3
+ 283 0180 7B79     	 ldrb r3,[r7,#5]
+ 284 0182 1448     	 ldr r0,.L14+20
+ 285 0184 1449     	 ldr r1,.L14+24
+ 286 0186 FFF7FEFF 	 bl sprintf
+  90:../main.c     **** 		USBD_VCOM_SendString((int8_t*)mb);
+ 287              	 .loc 1 90 0
+ 288 018a 1248     	 ldr r0,.L14+20
+ 289 018c FFF7FEFF 	 bl USBD_VCOM_SendString
+  91:../main.c     **** 		CDC_Device_USBTask(&USBD_VCOM_cdc_interface);
+ 290              	 .loc 1 91 0
+ 291 0190 1248     	 ldr r0,.L14+28
+ 292 0192 FFF7FEFF 	 bl CDC_Device_USBTask
+  92:../main.c     **** 
+  93:../main.c     **** 		sprintf(mb, "%f \n", temp);
+ 293              	 .loc 1 93 0
+ 294 0196 B868     	 ldr r0,[r7,#8]
+ 295 0198 FFF7FEFF 	 bl __aeabi_f2d
+ 296 019c 0246     	 mov r2,r0
+ 297 019e 0B46     	 mov r3,r1
+ 298 01a0 0C48     	 ldr r0,.L14+20
+ 299 01a2 0F49     	 ldr r1,.L14+32
+ 300 01a4 FFF7FEFF 	 bl sprintf
+  94:../main.c     **** 		USBD_VCOM_SendString((int8_t*)mb);
+ 301              	 .loc 1 94 0
+ 302 01a8 0A48     	 ldr r0,.L14+20
+ 303 01aa FFF7FEFF 	 bl USBD_VCOM_SendString
+  95:../main.c     **** 		CDC_Device_USBTask(&USBD_VCOM_cdc_interface);
+ 304              	 .loc 1 95 0
+ 305 01ae 0B48     	 ldr r0,.L14+28
+ 306 01b0 FFF7FEFF 	 bl CDC_Device_USBTask
+  96:../main.c     **** 
+  97:../main.c     **** 		delay(0xffffff);
+ 307              	 .loc 1 97 0
+ 308 01b4 6FF07F40 	 mvn r0,#-16777216
+ 309 01b8 FFF7FEFF 	 bl delay
+ 310              	.LBE2:
+  98:../main.c     **** 	}
+ 311              	 .loc 1 98 0
+ 312 01bc 3FE7     	 b .L13
+ 313              	.L15:
+ 314 01be 00BF     	 .align 2
+ 315              	.L14:
+ 316 01c0 00000000 	 .word cdc_event_flags
+ 317 01c4 00000000 	 .word I2C_MASTER_0
+ 318 01c8 00000000 	 .word tx_completion_0
+ 319 01cc 00000000 	 .word rx_completion_0
+ 320 01d0 00003040 	 .word 1076887552
+ 321 01d4 00000000 	 .word mb
+ 322 01d8 00000000 	 .word .LC0
+ 323 01dc 00000000 	 .word USBD_VCOM_cdc_interface
+ 324 01e0 14000000 	 .word .LC1
+ 325              	 .cfi_endproc
+ 326              	.LFE306:
+ 328              	 .section .text.delay,"ax",%progbits
+ 329              	 .align 2
+ 330              	 .global delay
+ 331              	 .thumb
+ 332              	 .thumb_func
+ 334              	delay:
+ 335              	.LFB307:
+  99:../main.c     **** 	return 1;
+ 100:../main.c     **** }
+ 101:../main.c     **** 
+ 102:../main.c     **** void delay(uint32_t cnt)
+ 103:../main.c     **** {
+ 336              	 .loc 1 103 0
+ 337              	 .cfi_startproc
+ 338              	 
+ 339              	 
+ 340              	 
+ 341 0000 80B4     	 push {r7}
+ 342              	.LCFI3:
+ 343              	 .cfi_def_cfa_offset 4
+ 344              	 .cfi_offset 7,-4
+ 345 0002 85B0     	 sub sp,sp,#20
+ 346              	.LCFI4:
+ 347              	 .cfi_def_cfa_offset 24
+ 348 0004 00AF     	 add r7,sp,#0
+ 349              	.LCFI5:
+ 350              	 .cfi_def_cfa_register 7
+ 351 0006 7860     	 str r0,[r7,#4]
+ 104:../main.c     **** 	volatile uint32_t count = cnt;
+ 352              	 .loc 1 104 0
+ 353 0008 7B68     	 ldr r3,[r7,#4]
+ 354 000a FB60     	 str r3,[r7,#12]
+ 105:../main.c     **** 	while (--count)
+ 355              	 .loc 1 105 0
+ 356 000c 00BF     	 nop
+ 357              	.L17:
+ 358              	 .loc 1 105 0 is_stmt 0 discriminator 1
+ 359 000e FB68     	 ldr r3,[r7,#12]
+ 360 0010 013B     	 subs r3,r3,#1
+ 361 0012 FB60     	 str r3,[r7,#12]
+ 362 0014 002B     	 cmp r3,#0
+ 363 0016 FAD1     	 bne .L17
+ 106:../main.c     **** 	{
+ 107:../main.c     **** 
+ 108:../main.c     **** 	}
+ 109:../main.c     **** }
+ 364              	 .loc 1 109 0 is_stmt 1
+ 365 0018 1437     	 adds r7,r7,#20
+ 366              	.LCFI6:
+ 367              	 .cfi_def_cfa_offset 4
+ 368 001a BD46     	 mov sp,r7
+ 369              	.LCFI7:
+ 370              	 .cfi_def_cfa_register 13
+ 371              	 
+ 372 001c 5DF8047B 	 ldr r7,[sp],#4
+ 373              	.LCFI8:
+ 374              	 .cfi_restore 7
+ 375              	 .cfi_def_cfa_offset 0
+ 376 0020 7047     	 bx lr
+ 377              	 .cfi_endproc
+ 378              	.LFE307:
+ 380 0022 00BF     	 .section .text.EndOfTransmit,"ax",%progbits
+ 381              	 .align 2
+ 382              	 .global EndOfTransmit
+ 383              	 .thumb
+ 384              	 .thumb_func
+ 386              	EndOfTransmit:
+ 387              	.LFB308:
+ 110:../main.c     **** 
+ 111:../main.c     **** void EndOfTransmit(void)
+ 112:../main.c     **** {
+ 388              	 .loc 1 112 0
+ 389              	 .cfi_startproc
+ 390              	 
+ 391              	 
+ 392              	 
+ 393 0000 80B4     	 push {r7}
+ 394              	.LCFI9:
+ 395              	 .cfi_def_cfa_offset 4
+ 396              	 .cfi_offset 7,-4
+ 397 0002 00AF     	 add r7,sp,#0
+ 398              	.LCFI10:
+ 399              	 .cfi_def_cfa_register 7
+ 113:../main.c     **** 	tx_completion_0 = 1;
+ 400              	 .loc 1 113 0
+ 401 0004 034B     	 ldr r3,.L19
+ 402 0006 0122     	 movs r2,#1
+ 403 0008 1A70     	 strb r2,[r3]
+ 114:../main.c     **** }
+ 404              	 .loc 1 114 0
+ 405 000a BD46     	 mov sp,r7
+ 406              	.LCFI11:
+ 407              	 .cfi_def_cfa_register 13
+ 408              	 
+ 409 000c 5DF8047B 	 ldr r7,[sp],#4
+ 410              	.LCFI12:
+ 411              	 .cfi_restore 7
+ 412              	 .cfi_def_cfa_offset 0
+ 413 0010 7047     	 bx lr
+ 414              	.L20:
+ 415 0012 00BF     	 .align 2
+ 416              	.L19:
+ 417 0014 00000000 	 .word tx_completion_0
+ 418              	 .cfi_endproc
+ 419              	.LFE308:
+ 421              	 .section .text.EndOfReceive,"ax",%progbits
+ 422              	 .align 2
+ 423              	 .global EndOfReceive
+ 424              	 .thumb
+ 425              	 .thumb_func
+ 427              	EndOfReceive:
+ 428              	.LFB309:
+ 115:../main.c     **** 
+ 116:../main.c     **** void EndOfReceive(void)
+ 117:../main.c     **** {
+ 429              	 .loc 1 117 0
+ 430              	 .cfi_startproc
+ 431              	 
+ 432              	 
+ 433              	 
+ 434 0000 80B4     	 push {r7}
+ 435              	.LCFI13:
+ 436              	 .cfi_def_cfa_offset 4
+ 437              	 .cfi_offset 7,-4
+ 438 0002 00AF     	 add r7,sp,#0
+ 439              	.LCFI14:
+ 440              	 .cfi_def_cfa_register 7
+ 118:../main.c     **** 	rx_completion_0 = 1;
+ 441              	 .loc 1 118 0
+ 442 0004 034B     	 ldr r3,.L22
+ 443 0006 0122     	 movs r2,#1
+ 444 0008 1A70     	 strb r2,[r3]
+ 119:../main.c     **** }
+ 445              	 .loc 1 119 0
+ 446 000a BD46     	 mov sp,r7
+ 447              	.LCFI15:
+ 448              	 .cfi_def_cfa_register 13
+ 449              	 
+ 450 000c 5DF8047B 	 ldr r7,[sp],#4
+ 451              	.LCFI16:
+ 452              	 .cfi_restore 7
+ 453              	 .cfi_def_cfa_offset 0
+ 454 0010 7047     	 bx lr
+ 455              	.L23:
+ 456 0012 00BF     	 .align 2
+ 457              	.L22:
+ 458 0014 00000000 	 .word rx_completion_0
+ 459              	 .cfi_endproc
+ 460              	.LFE309:
+ 462              	 .text
+ 463              	.Letext0:
+ 464              	 .file 2 "c:\\davev4\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 465              	 .file 3 "c:\\davev4\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 466              	 .file 4 "C:/DAVEv4/Workspace/I2C_temperature/Libraries/CMSIS/Infineon/XMC4500_series/Include/XMC4500.h"
+ 467              	 .file 5 "C:/DAVEv4/Workspace/I2C_temperature/Libraries/XMCLib/inc/xmc_usic.h"
+ 468              	 .file 6 "C:/DAVEv4/Workspace/I2C_temperature/Libraries/XMCLib/inc/xmc_i2c.h"
+ 469              	 .file 7 "C:/DAVEv4/Workspace/I2C_temperature/Dave/Generated/I2C_MASTER/i2c_master.h"
+ 470              	 .file 8 "C:/DAVEv4/Workspace/I2C_temperature/Libraries/XMCLib/inc/xmc_usbd_regs.h"
+ 471              	 .file 9 "C:/DAVEv4/Workspace/I2C_temperature/Libraries/XMCLib/inc/xmc_usbd.h"
+ 472              	 .file 10 "C:/DAVEv4/Workspace/I2C_temperature/Dave/Generated/USBD/usbd.h"
+ 473              	 .file 11 "c:\\davev4\\workspace\\i2c_temperature\\dave\\generated\\usbd\\usb\\core\\endpoint.h"
+ 474              	 .file 12 "c:\\davev4\\workspace\\i2c_temperature\\dave\\generated\\usbd_vcom\\class_driver\\common\\cdc_class_common.h"
+ 475              	 .file 13 "c:\\davev4\\workspace\\i2c_temperature\\dave\\generated\\usbd_vcom\\class_driver\\device/cdc_class_device.h"
+ 476              	 .file 14 "C:/DAVEv4/Workspace/I2C_temperature/Dave/Generated/USBD_VCOM/usbd_vcom.h"
+ 477              	 .file 15 "C:/DAVEv4/Workspace/I2C_temperature/Dave/Generated/DAVE.h"
+ 478              	 .file 16 "C:/DAVEv4/Workspace/I2C_temperature/Libraries/CMSIS/Include/cmsis_gcc.h"
+ 479              	 .file 17 "C:/DAVEv4/Workspace/I2C_temperature/Libraries/CMSIS/Include/core_cm4.h"
+ 480              	 .file 18 "C:/DAVEv4/Workspace/I2C_temperature/Libraries/CMSIS/Infineon/XMC4500_series/Include/system_XMC4500.h"
+ 481              	 .file 19 "C:/DAVEv4/Workspace/I2C_temperature/Dave/Generated/I2C_MASTER/i2c_master_extern.h"
+ 482              	 .file 20 "C:/DAVEv4/Workspace/I2C_temperature/Dave/Generated/USBD/usbd_extern.h"
+ 483              	 .file 21 "C:/DAVEv4/Workspace/I2C_temperature/Dave/Generated/USBD_VCOM/usbd_vcom_extern.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+                            *COM*:000000c8 mb
+    {standard input}:24     .bss.tx_completion_0:00000000 tx_completion_0
+    {standard input}:25     .bss.tx_completion_0:00000000 $d
+    {standard input}:30     .bss.rx_completion_0:00000000 rx_completion_0
+    {standard input}:31     .bss.rx_completion_0:00000000 $d
+    {standard input}:38     .rodata:00000000 $d
+    {standard input}:46     .text.main:00000000 $t
+    {standard input}:51     .text.main:00000000 main
+    {standard input}:334    .text.delay:00000000 delay
+    {standard input}:316    .text.main:000001c0 $d
+    {standard input}:329    .text.delay:00000000 $t
+    {standard input}:381    .text.EndOfTransmit:00000000 $t
+    {standard input}:386    .text.EndOfTransmit:00000000 EndOfTransmit
+    {standard input}:417    .text.EndOfTransmit:00000014 $d
+    {standard input}:422    .text.EndOfReceive:00000000 $t
+    {standard input}:427    .text.EndOfReceive:00000000 EndOfReceive
+    {standard input}:458    .text.EndOfReceive:00000014 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+__aeabi_i2d
+__aeabi_dmul
+__aeabi_ddiv
+__aeabi_dadd
+__aeabi_d2f
+__aeabi_f2d
+DAVE_Init
+USBD_VCOM_Connect
+USBD_VCOM_IsEnumDone
+I2C_MASTER_Init
+I2C_MASTER_Transmit
+I2C_MASTER_Receive
+sprintf
+USBD_VCOM_SendString
+CDC_Device_USBTask
+cdc_event_flags
+I2C_MASTER_0
+USBD_VCOM_cdc_interface
