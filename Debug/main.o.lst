@@ -63,9 +63,9 @@
   10:../main.c     **** typedef enum MPC9809
   11:../main.c     **** {
   12:../main.c     **** 	ADR = 0x18 << 1, 			//MPC9809 address
-  13:../main.c     **** 	INT_REG = 0x00,
+  13:../main.c     **** 	INIT_REG = 0x00,
   14:../main.c     **** 	REG_CONF = 0x01 << 1, 		// config. register
-  15:../main.c     **** 	TEMP_REG = 0x05,		//temp reg
+  15:../main.c     **** 	TEMP_REG = 0x05,			//temp reg
   16:../main.c     **** 	SHUT_UP_DOWN = 0x0100 << 1 	//sensor shut up and down
   17:../main.c     **** } TEMP_SENS;
   18:../main.c     **** 
@@ -154,7 +154,7 @@
   45:../main.c     **** 	while (true)
   46:../main.c     **** 	{
   47:../main.c     **** 		uint8_t i2c_data_x[1];
-  48:../main.c     **** 		uint8_t i2c_temp = INT_REG;
+  48:../main.c     **** 		uint8_t i2c_temp = INIT_REG;
  110              	 .loc 1 48 0
  111 003e 0023     	 movs r3,#0
  112 0040 FB70     	 strb r3,[r7,#3]

@@ -10,9 +10,9 @@
 typedef enum MPC9809
 {
 	ADR = 0x18 << 1, 			//MPC9809 address
-	INT_REG = 0x00,
+	INIT_REG = 0x00,
 	REG_CONF = 0x01 << 1, 		// config. register
-	TEMP_REG = 0x05,		//temp reg
+	TEMP_REG = 0x05,			//temp reg
 	SHUT_UP_DOWN = 0x0100 << 1 	//sensor shut up and down
 } TEMP_SENS;
 
@@ -45,7 +45,7 @@ int main(void)
 	while (true)
 	{
 		uint8_t i2c_data_x[1];
-		uint8_t i2c_temp = INT_REG;
+		uint8_t i2c_temp = INIT_REG;
 
 		I2C_MASTER_Init(&I2C_MASTER_0);
 

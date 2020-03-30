@@ -3592,7 +3592,7 @@ DSRAM2_BSS      0x30000000      0xe00 load address 0x0c00c0f8
  .debug_frame   0x00004288       0x34 c:/davev4/eclipse/arm-gcc-49/bin/../lib/gcc/arm-none-eabi/4.9.3/armv7e-m/softfp\libgcc.a(_divdi3.o)
  .debug_frame   0x000042bc       0x30 c:/davev4/eclipse/arm-gcc-49/bin/../lib/gcc/arm-none-eabi/4.9.3/armv7e-m/softfp\libgcc.a(_udivdi3.o)
 
-.debug_str      0x00000000     0x96dd
+.debug_str      0x00000000     0x96de
  *(.debug_str)
  .debug_str     0x00000000      0x567 ./Startup/system_XMC4500.o
                                 0x5d9 (size before relaxing)
@@ -3644,8 +3644,8 @@ DSRAM2_BSS      0x30000000      0xe00 load address 0x0c00c0f8
                                 0x79f (size before relaxing)
  .debug_str     0x000095d4       0x65 ./Dave/Generated/DAVE.o
                                0x2508 (size before relaxing)
- .debug_str     0x00009639       0xa4 ./main.o
-                               0x2285 (size before relaxing)
+ .debug_str     0x00009639       0xa5 ./main.o
+                               0x2286 (size before relaxing)
 
 .debug_loc      0x00000000     0x7676
  *(.debug_loc)
