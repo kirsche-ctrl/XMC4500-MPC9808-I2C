@@ -1,2 +1,2 @@
-# xmc4500_I2C_temperature
- infineon xmc4500 i2c temperature
+# xmc4500 I2C temperature
+ Infineon xmc4500 and MPC9808 i2c temperature
